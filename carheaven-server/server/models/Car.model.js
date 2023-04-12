@@ -1,38 +1,48 @@
+// Import necessary modules
 const { Schema, model } = require("mongoose");
-
+// Define car schema
 const carSchema = new Schema(
   {
-    imageURL: {
+    make: {
       type: String,
-      required: [true, "Image is required."],
+      required: true
     },
-    name: {
+    model: {
       type: String,
-      required: [true, "Name is required."],
+      required: true
+    },
+    year: {
+      type: Number,
+      required: true
+    },
+    price: {
+      type: Number,
+      required: true
     },
     description: {
       type: String,
-      required: [true, "Description is required."],
+      required: true
     },
-    year: {
+    imageUrl: {
       type: String,
-      required: [true, "Year is required."],
+      required: true
     },
-    anyIssues: {
-      type: String,
-      required: [true, "Any Issues is required."]
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User'
     },
-    price: {
-        type: Number,
-        required: [true, "Price is required. "]
+    createdAt: {
+      type: Date,
+      default: Date.now
+    },
+    updatedAt: {
+      type: Date,
+      default: Date.now
     }
-  },
-  {
-    // this second object adds extra properties: `createdAt` and `updatedAt`
-    timestamps: true,
   }
 );
 
-const User = model("Car", carSchema);
-
+// Create car model
+const Car = model("Car", carSchema);
+// Export car model
 module.exports = Car;
