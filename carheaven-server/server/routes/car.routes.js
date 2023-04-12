@@ -29,3 +29,18 @@ router.post("/", (req, res, next) => {
         });
       });
   });
+
+  // Get All Cars
+router.get("/", (req, res, next) => {
+    Car.find()
+      .then((carsFromDB) => {
+        res.json(carsFromDB);
+      })
+      .catch((err) => {
+        console.log("error getting list of cars", err);
+        res.status(500).json({
+          message: "error getting list of cars",
+          error: err,
+        });
+      });
+  });
