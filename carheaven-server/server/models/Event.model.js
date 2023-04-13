@@ -1,38 +1,41 @@
-const { Schema, model } = require("mongoose");
+const {Schema, model} = require("mongoose");
 
-const eventSchema = new Schema(
-  {
-    imageURL: {
-      type: String,
-      required: [true, "Image is required."],
-    },
-    title: {
-      type: String,
-      required: [true, "Title is required."],
-    },
-    description: {
-      type: String,
-      required: [true, "Description is required."],
-    },
-    location: {
-      type: String,
-      required: [true, "Location is required."],
-    },
-    time: {
-      type: String,
-      required: [true, "Time is required."]
-    },
-    requirements: {
-        type: String,
-        required: [true, "Requirements are required. "]
-    }
+const eventSchema = new Schema({
+  title: {
+    type:String,
+    required : [true, "Title must be provided"]
   },
-  {
-    // this second object adds extra properties: `createdAt` and `updatedAt`
-    timestamps: true,
-  }
-);
+  description: {
+    type: String,
+    required : [true, "Description must be provided"]
+  },
+  imageUrl: {
+    type: String,
+    required : [true, "Image must be provided"]
+  },
+  location:{
+    type: String,
+    required : [true, "Location must be provided"]
+  },
+  creator: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  status: {
+    type: String,
+    enum: ["Finished", "cancelled", "upcoming"], // Update to use "upcoming"
+    default: "upcoming", // Set "upcoming" as the default status
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
 
-const User = model("Event", eventSchema);
-
+const Event = model("Event",eventSchema);
 module.exports = Event;
