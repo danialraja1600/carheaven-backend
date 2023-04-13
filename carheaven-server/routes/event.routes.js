@@ -80,6 +80,33 @@ router.post("/", isAuthenticated, async(req, res, next) => { // before creating 
     };
     });
 
+    // PUT route with endpoint /:eventId to update events
+    router.put("/:eventId", isAuthenticated, async (req, res) => { // middleware applied to see if user is authenticated 
+        const { eventId } = req.params; // expecting request parameter 
+        
+        if (!mongoose.Types.ObjectId.isValid(eventId)) { // checking if eventId is valid mongoose objectId
+        return res.status(400).json({ message: "Specified ID is not valid" }); // if not returns error message
+        }
+        
+        try { // if eventId is valid, it finds the event with provided id
+        const event = await Event.findById(eventId);
+        // Update "updatedAt" field
+        req.body.updatedAt = Date(); // updating the date with date of update
+        // updating event 
+        const updatedEvent = await Event.findByIdAndUpdate(eventId, req.body, { new: true });
+        // using findByIdAndUpdate method to update the event with new data recieved through req body
+        res.json(updatedEvent); // rerturns updated event in the response
+        }
+        // if any error occurs, catch block is executed.
+        catch (err) { 
+        console.log("error updating event", err);
+        res.status(500).json({ // server responds with error message and status code 500
+        message: "error updating event",
+        error: err,
+        });
+        }
+        });
+
 
 
 
