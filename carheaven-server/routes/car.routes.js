@@ -7,7 +7,7 @@ const Event = require("../models/Event.model");
 
 // Create a car
 // Taking in JSON data from client request to create new car object
-router.post("/", (req, res, next) => {
+router.post("/", isAuthenticated, (req, res, next) => {
     const car = {
       make: req.body.make,
       model: req.body.model,
@@ -65,7 +65,7 @@ router.get("/:carId", (req, res, next) => { //retrieves a specific car object by
       });
   });
   // update the car
-  router.put("/:carId", (req, res, next) => { //updates a specific car object by its MongoDB ID primary key
+  router.put("/:carId", isAuthenticated , (req, res, next) => { //updates a specific car object by its MongoDB ID primary key
     const { carId } = req.params;
   
     if (!mongoose.Types.ObjectId.isValid(projectId)) { //checks if the given ID is valid
@@ -87,7 +87,7 @@ router.get("/:carId", (req, res, next) => { //retrieves a specific car object by
     });
 });
 
-router.delete("/carId", (req, res, next) => {
+router.delete("/carId", isAuthenticated, (req, res, next) => {
     //function deletes specific car object by its ID primary key
     const { carId } = req.params;
 
