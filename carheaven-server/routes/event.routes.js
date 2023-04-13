@@ -54,6 +54,32 @@ router.get("/:eventId", async(req, res, next) => { // extracting eventId from re
         }
         });
 
+    // Creating a new event through POST req to API endpoint
+router.post("/", isAuthenticated, async(req, res, next) => { // before creating event checks if user is authenticated or not
+    const event = { // if authenticated, a new event object is created with all these properties
+    name: req.body.name,
+    description: req.body.description,
+    date: req.body.date,
+    status: "upcoming", // Updated field for status
+    creator: req.body.userID,
+    createdAt: Date(),
+    updatedAt: Date(),
+    };
+    
+    try{
+    const response = await Event.create(event); // attempts to save event to database
+    console.log(response);
+    res.status(201).json(response); // if successful, sends 201 response with saved event object in JSON format
+    }
+    catch(err) { // if there is any error, error is caught and HTTP 500 response is sent with error message and details
+    console.log("error adding a new event", err);
+    res.status(500).json({
+    message: "error adding a new event",
+    error: err,
+    });
+    };
+    });
+
 
 
 
