@@ -16,8 +16,8 @@ router.post("/", (req, res, next) => {
       description: req.body.description,
       imageUrl: req.body.imageUrl,
       user: req.body.userID,
-      createdAt: Date(),
-      updateAt: Date(),
+      createdAt: Date(), // date function created to return the current time and date
+      updateAt: Date(), // date will be updated once a client updates a car
     };
   
     Car.create(car) // Creating and saving new car to datbase
@@ -64,5 +64,28 @@ router.get("/:carId", (req, res, next) => { //retrieves a specific car object by
         });
       });
   });
+  // update the car
+  router.put("/:carId", (req, res, next) => { //updates a specific car object by its MongoDB ID primary key
+    const { carId } = req.params;
+  
+    if (!mongoose.Types.ObjectId.isValid(projectId)) { //checks if the given ID is valid
+      res.status(400).json({ message: "Specified id is not valid" });
+      return;
+    }
+    
+  req.body.updateAt = Date(); //updating property of car object with current date and time
+  Car.findByIdAndUpdate(carId, req.body, { new: true }) //method used to update the car record with the given carId
+  //three arguments: the id of the car to update, the new data to update the record with, and options object(indicating we want to return updated version)
+    .then((updatedCar) => res.json(updatedCar)) // then method called when the Promise is resolved with the updated record.
+    //sending the updated car record as a JSON response to the client.
+    .catch((err) => { // catch method called if an error occurs during the process of updating the car record.
+      console.log("error updating project", err);
+      res.status(500).json({
+        message: "error updating project",
+        error: err,
+      });
+    });
+});
+          
 
   module.exports = router; //exporting router object so that it can be used by other modules in the app
