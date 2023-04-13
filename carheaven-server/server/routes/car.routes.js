@@ -86,6 +86,34 @@ router.get("/:carId", (req, res, next) => { //retrieves a specific car object by
       });
     });
 });
+
+router.delete("/carId", (req, res, next) => {
+    //function deletes specific car object by its ID primary key
+    const { carId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(carId)) {
+        res.status(400).json({message: "Specified is not valid" });
+        return;
+    }
+    // first must check if given Id is valid
+    //returns a message response if it is
+    
+    // if Id is valid then this function is executed
+    // deletes the car object with thjat Id from the database
+    Car.findByIdAndRemove(carId)
+        .then(() =>
+            res.json({
+            message: `Car with ${carId} is removed successfully.`, //succesful message if all went well
+    })
+    )
+        .catch((err) => {
+            console.log("error deleting selected car", err);
+            res.status(500).json({
+                message: "error deleting selected car",
+                error: err,
+            });
+        });
+        });
           
 
   module.exports = router; //exporting router object so that it can be used by other modules in the app
