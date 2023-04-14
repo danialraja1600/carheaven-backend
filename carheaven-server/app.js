@@ -22,7 +22,7 @@ const authRoutes = require("./routes/auth.routes");
 app.use("/auth", authRoutes);
 
 app.use("/api/cars", require("./routes/car.routes"));
-app.use("/api/event", require("./routes/event.routes"));
+app.use("/api/events", require("./routes/event.routes"));
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
 

@@ -56,13 +56,15 @@ router.get("/:eventId", async(req, res, next) => { // extracting eventId from re
     // Creating a new event through POST req to API endpoint
 router.post("/", isAuthenticated, async(req, res, next) => { // before creating event checks if user is authenticated or not
     const event = { // if authenticated, a new event object is created with all these properties
-    name: req.body.name,
-    description: req.body.description,
-    date: req.body.date,
-    status: "upcoming", // Updated field for status
-    creator: req.body.userID,
-    createdAt: Date(),
-    updatedAt: Date(),
+        title: req.body.title,
+        description: req.body.description,
+        date: req.body.date,
+        status: "upcoming", // Updated field for status
+        creator: req.payload._id,
+        imageUrl:req.body.imageUrl,
+        location:req.body.location,
+        createdAt: Date(),
+        updatedAt: Date(),
     };
     
     try{
@@ -157,20 +159,17 @@ router.post("/", isAuthenticated, async(req, res, next) => { // before creating 
           }
             // // removes the event object from the database if succesful
             await Event.findByIdAndRemove(eventId);
-            then(() =>
-            res.json({
-            message: `Event with id ${eventId} is removed successfully.`, 
+            res.json({message: `Event with id ${eventId} is removed successfully.`, 
             })
-            )
         }
-            catch(err) {
+        catch(err) {
             console.log("error deleting event", err);
             res.status(500).json({
             message: "error deleting event",
             error: err,
             });
             };
-            });
+        });
 
 
 
