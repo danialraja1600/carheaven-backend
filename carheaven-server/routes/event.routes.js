@@ -107,7 +107,35 @@ router.post("/", isAuthenticated, async(req, res, next) => { // before creating 
         }
         });
 
+        router.delete("/:eventId", isAuthenticated , async(req, res, next) => {
+                //function deletes specific event object by its ID
+                // before creating event checks if user is authenticated or not
 
+            const { eventId } = req.params;
+            
+            if (!mongoose.Types.ObjectId.isValid(eventId)) { // checks if given Id is valid
+            res.status(400).json({ message: "Specified id is not valid" }); //if not rrturns a error message
+            return;
+            }
+            // first must check if given Id is valid
+            //returns a message response if it is
+    
+            // if Id is valid then this function is executed, finds the event by Id and 
+            // removes the event object from the database
+            try{
+            await Event.findByIdAndRemove(eventId);
+            res.json({
+            message: `Event with id ${eventId} is removed successfully.`, 
+            })
+            }
+            catch(err) {
+            console.log("error deleting event", err);
+            res.status(500).json({
+            message: "error deleting event",
+            error: err,
+            });
+            };
+            });
 
 
 
