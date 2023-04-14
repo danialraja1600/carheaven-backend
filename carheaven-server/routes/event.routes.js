@@ -142,6 +142,12 @@ router.post("/", isAuthenticated, async(req, res, next) => { // before creating 
             try {
             const event = await Event.findById(eventId);
 
+            // Check if the event exists
+            if (!event) { //checking if variable is truthy 
+            return res.status(404).json({ message: 'Event not found' });
+            // if not, return error response, status code 404
+          }
+
             // Check if the logged-in user is the creator of the event
             // if statement checking if user making req, is the creator of the event
             if (event.creator.toString() !== req.payload._id) {

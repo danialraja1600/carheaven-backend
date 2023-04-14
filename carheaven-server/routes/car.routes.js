@@ -117,6 +117,22 @@ router.delete("/carId", isAuthenticated, (req, res, next) => {
     }
     // first must check if given Id is valid
     //returns a message response if it is
+    const car = Car.findById(carId);
+    
+    // Check if the car exists
+    if (!car) { //checking if variable is truthy 
+      return res.status(404).json({ message: 'Car not found' });
+      // if not, return error response, status code 404
+    }
+
+      // Check if the logged-in user is the creator of the car
+      // if statement checking if user making req, is the creator of the car
+      if (car.creator.toString() !== req.payload._id) {
+      // comparing users id with id of car creator after converting it to a string
+      // must convert to string. cant compare a string and an ObjectId type of variable
+      return res.status(403).json({ message: 'Unauthorized' });
+      // if they don't match, return error response with status code 403
+    }
     
     // if Id is valid then this function is executed
     // deletes the car object with thjat Id from the database
