@@ -90,6 +90,13 @@ router.post("/", isAuthenticated, async(req, res, next) => { // before creating 
         
         try { // if eventId is valid, it finds the event with provided id
         const event = await Event.findById(eventId);
+
+        // Check if the event exists
+        if (!event) { //checking if variable is truthy 
+        return res.status(404).json({ message: 'Event not found' });
+        // if not, return error response, status code 404
+      }
+      
         // Update "updatedAt" field
         req.body.updatedAt = Date(); // updating the date with date of update
         // updating event 
