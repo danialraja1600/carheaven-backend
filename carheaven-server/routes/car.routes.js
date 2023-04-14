@@ -6,7 +6,7 @@ const Car = require("../models/Car.model");
 
 // Create a car
 // Taking in JSON data from client request to create new car object
-router.post("/", isAuthenticated, (req, res, next) => {
+router.post("/createCar", isAuthenticated, (req, res, next) => {
     const car = {
       make: req.body.make,
       model: req.body.model,
@@ -31,7 +31,7 @@ router.post("/", isAuthenticated, (req, res, next) => {
   });
 
   // Get All Cars
-router.get("/", (req, res, next) => { //  Retrieving all cars as response to request from client
+router.get("/getCars", (req, res, next) => { //  Retrieving all cars as response to request from client
     Car.find() // Method being used to fetch all cars from DB. Sending back response to client with array of objects
       .then((carsFromDB) => {
         res.json(carsFromDB);
@@ -44,6 +44,26 @@ router.get("/", (req, res, next) => { //  Retrieving all cars as response to req
         });
       });
   });
+
+router.get("/myCars/:userId", isAuthenticated, (req, res, next) => {
+  const { userId } = req.params;
+  console.log("hello");
+  if(!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ message: "User Id is not valid" });
+  }
+  Car.find({user : userId})
+  .then((myCarsFromDB) => {
+    res.json(myCarsFromDB);
+    })
+  .catch((err) => {
+    console.log("error getting your list of cars", err);
+    res.status(500).json({
+      message: "error getting your list of cars",
+      error: err,
+    });
+  });
+});
+
 // GET car by id
 router.get("/:carId", (req, res, next) => { //retrieves a specific car object by its MongoDB ID primary key
     const { carId } = req.params;
