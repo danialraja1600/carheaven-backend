@@ -96,7 +96,16 @@ router.post("/", isAuthenticated, async(req, res, next) => { // before creating 
         return res.status(404).json({ message: 'Event not found' });
         // if not, return error response, status code 404
       }
-      
+
+        // Check if the logged-in user is the creator of the event
+        // if statement checking if user making req, is the creator of the event
+        if (event.creator.toString() !== req.payload._id) {
+        // comparing users id with id of event creator after converting it to a string
+        // must convert to string. cant compare a string and an ObjectId type of variable
+        return res.status(403).json({ message: 'Unauthorized' });
+        // if they don't match, return error response with status code 403
+      }
+
         // Update "updatedAt" field
         req.body.updatedAt = Date(); // updating the date with date of update
         // updating event 
