@@ -65,27 +65,47 @@ router.get("/:carId", (req, res, next) => { //retrieves a specific car object by
       });
   });
   // update the car
-  router.put("/:carId", isAuthenticated , (req, res, next) => { //updates a specific car object by its MongoDB ID primary key
+  router.put("/:carId", isAuthenticated , async(req, res, next) => { //updates a specific car object by its MongoDB ID primary key
     const { carId } = req.params;
   
     if (!mongoose.Types.ObjectId.isValid(projectId)) { //checks if the given ID is valid
-      res.status(400).json({ message: "Specified id is not valid" });
-      return;
+      return res.status(400).json({ message: "Specified id is not valid" });
+  }
+
+  try { // if carId is valid, it finds the car with provided id
+    const car = await Car.findById(carId);
+
+    // Check if the car exists
+    if (!car) { //checking if variable is truthy 
+    return res.status(404).json({ message: 'Car not found' });
+    // if not, return error response, status code 404
+  }
+
+    // Check if the logged-in user is the creator of the car
+    // if statement checking if user making req, is the creator of the car
+    if (car.creator.toString() !== req.payload._id) {
+    // comparing users id with id of car creator after converting it to a string
+    // must convert to string. cant compare a string and an ObjectId type of variable
+    return res.status(403).json({ message: 'Unauthorized' });
+    // if they don't match, return error response with status code 403
+  }
+
+    // Update "updatedAt" field
+    req.body.updatedAt = Date(); // updating the date with date of update
+    // updating car
+    const updatedCar = await Car.findByIdAndUpdate(carId, req.body, { new: true });
+    // using findByIdAndUpdate method to update the car with new data recieved through req body
+    res.json(updatedCar); // rerturns updated car in the response
     }
-    
-  req.body.updateAt = Date(); //updating property of car object with current date and time
-  Car.findByIdAndUpdate(carId, req.body, { new: true }) //method used to update the car record with the given carId
-  //three arguments: the id of the car to update, the new data to update the record with, and options object(indicating we want to return updated version)
-    .then((updatedCar) => res.json(updatedCar)) // then method called when the Promise is resolved with the updated record.
-    //sending the updated car record as a JSON response to the client.
-    .catch((err) => { // catch method called if an error occurs during the process of updating the car record.
-      console.log("error updating project", err);
-      res.status(500).json({
-        message: "error updating project",
-        error: err,
-      });
+    // if any error occurs, catch block is executed.
+    catch (err) { 
+    console.log("error updating car", err);
+    res.status(500).json({ // server responds with error message and status code 500
+    message: "error updating car",
+    error: err,
     });
-});
+    }
+    });
 
 router.delete("/carId", isAuthenticated, (req, res, next) => {
     //function deletes specific car object by its ID primary key
