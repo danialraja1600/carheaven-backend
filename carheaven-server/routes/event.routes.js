@@ -1,8 +1,7 @@
 const router = require("express").Router();
 
 const mongoose = require("mongoose");
-
-const Car = require("../models/Car.model");
+const {isAuthenticated} = require("../middleware/jwt.middleware");
 const Event = require("../models/Event.model");
 
 // GET route  ("/")

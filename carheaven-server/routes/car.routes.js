@@ -1,9 +1,8 @@
 const router = require("express").Router();
 
 const mongoose = require("mongoose");
-
+const {isAuthenticated} = require("../middleware/jwt.middleware");
 const Car = require("../models/Car.model");
-const Event = require("../models/Event.model");
 
 // Create a car
 // Taking in JSON data from client request to create new car object
@@ -15,7 +14,7 @@ router.post("/", isAuthenticated, (req, res, next) => {
       price: req.body.price,
       description: req.body.description,
       imageUrl: req.body.imageUrl,
-      user: req.body.userID,
+      user: req.payload._id,
       createdAt: Date(), // date function created to return the current time and date
       updateAt: Date(), // date will be updated once a client updates a car
     };
@@ -68,7 +67,7 @@ router.get("/:carId", (req, res, next) => { //retrieves a specific car object by
   router.put("/:carId", isAuthenticated , async(req, res, next) => { //updates a specific car object by its MongoDB ID primary key
     const { carId } = req.params;
   
-    if (!mongoose.Types.ObjectId.isValid(projectId)) { //checks if the given ID is valid
+    if (!mongoose.Types.ObjectId.isValid(carId)) { //checks if the given ID is valid
       return res.status(400).json({ message: "Specified id is not valid" });
   }
 
@@ -77,16 +76,17 @@ router.get("/:carId", (req, res, next) => { //retrieves a specific car object by
 
     // Check if the car exists
     if (!car) { //checking if variable is truthy 
-    return res.status(404).json({ message: 'Car not found' });
+      return res.status(404).json({ message: 'Car not found' });
     // if not, return error response, status code 404
   }
 
     // Check if the logged-in user is the creator of the car
     // if statement checking if user making req, is the creator of the car
-    if (car.creator.toString() !== req.payload._id) {
+    console.log(car);
+    if(car.user._id.toString() !== req.payload._id) {
     // comparing users id with id of car creator after converting it to a string
     // must convert to string. cant compare a string and an ObjectId type of variable
-    return res.status(403).json({ message: 'Unauthorized' });
+      return res.status(403).json({ message: 'Unauthorized' });
     // if they don't match, return error response with status code 403
   }
 
@@ -107,7 +107,7 @@ router.get("/:carId", (req, res, next) => { //retrieves a specific car object by
     }
     });
 
-router.delete("/carId", isAuthenticated, (req, res, next) => {
+router.delete("/:carId", isAuthenticated, async(req, res, next) => {
     //function deletes specific car object by its ID primary key
     const { carId } = req.params;
 
@@ -117,8 +117,8 @@ router.delete("/carId", isAuthenticated, (req, res, next) => {
     }
     // first must check if given Id is valid
     //returns a message response if it is
-    const car = Car.findById(carId);
-    
+    const car = await Car.findById(carId);
+
     // Check if the car exists
     if (!car) { //checking if variable is truthy 
       return res.status(404).json({ message: 'Car not found' });
@@ -127,10 +127,11 @@ router.delete("/carId", isAuthenticated, (req, res, next) => {
 
       // Check if the logged-in user is the creator of the car
       // if statement checking if user making req, is the creator of the car
-      if (car.creator.toString() !== req.payload._id) {
+    console.log(car);
+    if(car.user._id.toString() !== req.payload._id) {
       // comparing users id with id of car creator after converting it to a string
       // must convert to string. cant compare a string and an ObjectId type of variable
-      return res.status(403).json({ message: 'Unauthorized' });
+        return res.status(403).json({ message: 'Unauthorized' });
       // if they don't match, return error response with status code 403
     }
     
