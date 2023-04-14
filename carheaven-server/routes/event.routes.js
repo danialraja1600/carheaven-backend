@@ -134,16 +134,30 @@ router.post("/", isAuthenticated, async(req, res, next) => { // before creating 
             return;
             }
             // first must check if given Id is valid
-            //returns a message response if it is
-    
-            // if Id is valid then this function is executed, finds the event by Id and 
-            // removes the event object from the database
-            try{
+            //returns a message response if it is not
+            
+            // if it is valid, more auth is carried out
+            // checking if user exists
+            // checking if ids match before allowing user to delete event 
+            try {
+            const event = await Event.findById(eventId);
+
+            // Check if the logged-in user is the creator of the event
+            // if statement checking if user making req, is the creator of the event
+            if (event.creator.toString() !== req.payload._id) {
+            // comparing users id with id of event creator after converting it to a string
+            // must convert to string. cant compare a string and an ObjectId type of variable
+            return res.status(403).json({ message: 'Unauthorized' });
+            // if they don't match, return error response with status code 403
+          }
+            // // removes the event object from the database if succesful
             await Event.findByIdAndRemove(eventId);
+            then(() =>
             res.json({
             message: `Event with id ${eventId} is removed successfully.`, 
             })
-            }
+            )
+        }
             catch(err) {
             console.log("error deleting event", err);
             res.status(500).json({
