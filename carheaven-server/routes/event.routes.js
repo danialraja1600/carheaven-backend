@@ -78,7 +78,6 @@ router.post("/", isAuthenticated, async(req, res, next) => { // before creating 
         title: req.body.title,
         description: req.body.description,
         date: req.body.date,
-        status: "upcoming", // Updated field for status
         creator: req.payload._id,
         imageUrl:req.body.imageUrl,
         location:req.body.location,

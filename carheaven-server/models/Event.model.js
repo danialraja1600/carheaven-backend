@@ -22,11 +22,6 @@ const eventSchema = new Schema({
     ref: 'User',
     required: true,
   },
-  status: {
-    type: String,
-    enum: ["Finished", "cancelled", "upcoming"], // Update to use "upcoming"
-    default: "upcoming", // Set "upcoming" as the default status
-  },
   createdAt: {
     type: Date,
     default: Date.now,
