@@ -11,7 +11,7 @@ router.get("/getEvents", async(req, res, next) => {
     // using async to prevent code from moving to next line until awaited opertion is complete 
     // better/ easier to maintain and to read
     try{
-    eventsFromDB = await Event.find(); // returns list of events 
+    eventsFromDB = await Event.find().populate('creator', "name"); // returns list of events 
     res.json(eventsFromDB); // once returned, route handler sends it back to the client as a JSON object
     }
     // if any error occurs during db query, route handler catches error and sends 500 status code
